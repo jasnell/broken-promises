@@ -1,16 +1,18 @@
 const { promisify } = require('util');
+const { openSync, closeSync } = require('fs');
 const sleep = promisify(setTimeout);
 
-let fd = 0;
+let leakedFd = false;
 
 function DoSomething() {
+  let fd = 0;
   return new Promise((resolve) => {
-    // Simulate allocating an fd
-    fd = 1;
-    throw new Error('boom');
+    fd = openSync(__filename, 'r+');
+    leakedFd = true;
+    functionThatDoesNotExist();
   }).catch(() => {
-    // Simulate cleaning up the fd
-    fd = 0;
+    closeSync(fd);
+    leakedFd = false;
   });
 }
 
@@ -18,5 +20,5 @@ DoSomething();
 console.log('A');
 
 process.on('exit', () => {
-  console.log(fd);
+  console.log('File descriptor leaked?', leakedFd);
 });
