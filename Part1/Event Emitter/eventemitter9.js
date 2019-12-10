@@ -13,6 +13,7 @@ foo.on('something', async () => {
   functionThatDoesNotExist();
 })
 
+// Just don't make your error handler async!!
 foo.on('error', (err) => {
   throw new Error('boom');
 });
