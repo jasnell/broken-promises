@@ -1,9 +1,12 @@
 const { promisify } = require('util');
 const sleep = promisify(setTimeout);
 
+// We end up with exactly the same problem when
+// an error occurs.
+
 async function WaitForSomething() {
   await sleep(100);
-  throw new Error('boom');
+  functionThatDoesNotExist();
 }
 
 setTimeout(async () => {

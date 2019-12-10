@@ -1,15 +1,8 @@
 const fs = require('fs');
 
-let leakedFd;
+// A more practical example...
 
-fs.open(__filename, 'r+', async (err, fd) => {
-  if (err) throw err;
-  leakedFd = fd;
-  throw new Error('boom');
+fs.open('file_that_does_not_exist', 'r+', async (err, fd) => {
+  if (err) throw err
+  close(fd, () => {});
 });
-
-process.on('unhandledRejection', console.log);
-
-process.on('exit', () => {
-  console.log(leakedFd);
-})

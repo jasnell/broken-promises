@@ -9,7 +9,7 @@ async function bar(n, s, t) {
 
 async function foo() {
   process.stdout.write('L');
-  for (const m of await Promise.all([bar(20, 'N','R'), bar(10, 'T', 'E')]))
+  for (const m of await Promise.all([bar(20, 'N', 'R'), bar(10, 'T', 'E')]))
     process.stdout.write(m)
 }
 

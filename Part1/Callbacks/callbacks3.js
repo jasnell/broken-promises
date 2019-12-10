@@ -1,3 +1,5 @@
+// A ever so slightly expanded example...
+
 const { promisify } = require('util');
 const sleep = promisify(setTimeout);
 
