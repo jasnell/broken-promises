@@ -1,7 +1,7 @@
 const { writeFile, readFile, unlink } = require('fs').promises;
 const file = './foo.json';
 
-unlink(file).catch(()=>{});  // Ignore
+unlink(file).catch(()=>{ /** ignore **/ });
 
 const numbers = [];
 
