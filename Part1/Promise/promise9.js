@@ -1,6 +1,4 @@
-const { promisify } = require('util');
 const { openSync, closeSync } = require('fs');
-const sleep = promisify(setTimeout);
 
 let leakedFd = false;
 
