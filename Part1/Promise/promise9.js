@@ -15,7 +15,6 @@ function DoSomething() {
 }
 
 DoSomething();
-console.log('A');
 
 process.on('exit', () => {
   console.log('File descriptor leaked?', leakedFd);

@@ -1,0 +1,14 @@
+1. Async Functions Everywhere!
+
+   Be careful passing async functions where they are unexpected
+
+   Dont use callbacks and promises together
+
+   Know when your code is running!
+
+2. Error Handling Issues / Leaks
+
+3. Loops!! Memory Issues
+
+4. Things that make no sense
+

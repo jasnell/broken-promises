@@ -1,4 +1,4 @@
-const { open, close } = require('fs').promises;
+const { open } = require('fs').promises;
 
 var leakedFd = false;
 
