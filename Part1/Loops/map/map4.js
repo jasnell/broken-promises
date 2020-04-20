@@ -1,12 +1,14 @@
 const { writeFile } = require('fs').promises;
-const { loremIpsum } = require('lorem-ipsum')
 const data = require('./a.json')
+const http = require('http')
+const pMap = require('p-map')
 
 const { monitorEventLoopDelay } = require('perf_hooks')
 const h = monitorEventLoopDelay()
 h.enable()
 
 const start = process.hrtime.bigint()
+
 let done = false
 let counter = 0
 
@@ -21,17 +23,21 @@ async function write(data) {
   done = true
 }
 
-Promise.all(data.items.map(async (i) => {
-  // Note that this is a purely synchronous operation...
-  const ret = loremIpsum({
-    count: i,
-    paragraphLowerBound: 1,
-    paragraphUpperBound: i,
-    sentenceLowerBound: 1,
-    sentenceUpperBound: i,
-    units: 'paragraphs' })
-  return ret
-})).then(write);
+function mapper(i) {
+  return new Promise((resolve, rej) => {
+    http.get('http://localhost:8000', { headers: { num: i } }, (res) => {
+      let data = ''
+      res.setEncoding('utf8')
+      res.on('data', (chunk) => data += chunk)
+      res.on('close', () => {
+        resolve(data)
+      })
+      res.on('error', rej)
+    })
+  })
+}
+
+pMap(data.items, mapper, { concurrency: 2 }).then(write)
 
 process.on('exit', () => {
   console.log(

@@ -1,12 +1,15 @@
+const Piscina = require('piscina')
 const { writeFile } = require('fs').promises;
-const { loremIpsum } = require('lorem-ipsum')
 const data = require('./a.json')
+const pMap = require('p-map')
+const { resolve } = require('path')
 
 const { monitorEventLoopDelay } = require('perf_hooks')
 const h = monitorEventLoopDelay()
 h.enable()
 
 const start = process.hrtime.bigint()
+
 let done = false
 let counter = 0
 
@@ -16,22 +19,21 @@ function a() {
 }
 setImmediate(a)
 
+const piscina = new Piscina({
+  fileName: resolve(__dirname, 'activity.js'),
+  concurrentTasksPerWorker: 4,
+})
+
 async function write(data) {
   await writeFile('a1.json', JSON.stringify(data))
   done = true
 }
 
-Promise.all(data.items.map(async (i) => {
-  // Note that this is a purely synchronous operation...
-  const ret = loremIpsum({
-    count: i,
-    paragraphLowerBound: 1,
-    paragraphUpperBound: i,
-    sentenceLowerBound: 1,
-    sentenceUpperBound: i,
-    units: 'paragraphs' })
-  return ret
-})).then(write);
+async function mapper(i) {
+  return piscina.runTask({ i })
+}
+
+pMap(data.items, mapper, { concurrency: 5 }).then(write)
 
 process.on('exit', () => {
   console.log(

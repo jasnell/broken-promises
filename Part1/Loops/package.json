@@ -9,6 +9,9 @@
   "author": "",
   "license": "MIT",
   "dependencies": {
-    "lorem-ipsum": "^2.0.3"
+    "climem": "^1.0.3",
+    "lorem-ipsum": "^2.0.3",
+    "p-map": "^4.0.0",
+    "piscina": "file:../../../piscina"
   }
 }
