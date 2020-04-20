@@ -1,0 +1,14 @@
+{
+  "name": "loops",
+  "version": "1.0.0",
+  "description": "",
+  "main": "loop1.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "",
+  "license": "MIT",
+  "dependencies": {
+    "lorem-ipsum": "^2.0.3"
+  }
+}
