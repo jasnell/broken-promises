@@ -10,8 +10,14 @@ const start = process.hrtime.bigint()
 
 let done = false
 let counter = 0
+let maxHeapUsed = 0;
+let maxHeapTotal = 0;
+
 
 function a() {
+  const mu = process.memoryUsage()
+  maxHeapUsed = Math.max(maxHeapUsed, mu.heapUsed)
+  maxHeapTotal = Math.max(maxHeapTotal, mu.heapTotal)
   counter++
   if (!done) setImmediate(a)
 }
@@ -44,5 +50,7 @@ process.on('exit', () => {
     h.mean,
     h.percentile(50),
     h.percentile(99),
+    maxHeapUsed,
+    maxHeapTotal,
     counter)
 })

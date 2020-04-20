@@ -2,9 +2,12 @@ const { writeFile } = require('fs').promises
 const { promisify } = require('util')
 const randomFill = promisify(require('crypto').randomFill)
 
-const buf = Buffer.allocUnsafe(1000)
+const count = parseInt(process.argv[2]) || 10
+console.log('Generating ', count)
 
-async function process() {
+const buf = Buffer.allocUnsafe(count)
+
+async function processItems() {
   const data = { items: new Array(buf.length) }
   await randomFill(buf)
   for (let n = 0; n < buf.length; n++)
@@ -16,4 +19,4 @@ async function write(data) {
   return writeFile('a.json', JSON.stringify(data))
 }
 
-process().then(write)
+processItems().then(write)

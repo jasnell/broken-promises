@@ -9,8 +9,14 @@ h.enable()
 const start = process.hrtime.bigint()
 let done = false
 let counter = 0
+let maxHeapUsed = 0;
+let maxHeapTotal = 0;
+
 
 function a() {
+  const mu = process.memoryUsage()
+  maxHeapUsed = Math.max(maxHeapUsed, mu.heapUsed)
+  maxHeapTotal = Math.max(maxHeapTotal, mu.heapTotal)
   counter++
   if (!done) setImmediate(a)
 }
@@ -23,14 +29,7 @@ async function write(data) {
 
 Promise.all(data.items.map(async (i) => {
   // Note that this is a purely synchronous operation...
-  const ret = loremIpsum({
-    count: i,
-    paragraphLowerBound: 1,
-    paragraphUpperBound: i,
-    sentenceLowerBound: 1,
-    sentenceUpperBound: i,
-    units: 'paragraphs' })
-  return ret
+  return loremIpsum({ count: i, units: 'words' })
 })).then(write);
 
 process.on('exit', () => {
@@ -41,5 +40,7 @@ process.on('exit', () => {
     h.mean,
     h.percentile(50),
     h.percentile(99),
+    maxHeapUsed,
+    maxHeapTotal,
     counter)
 })
