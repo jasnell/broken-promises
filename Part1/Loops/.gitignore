@@ -1,3 +1,4 @@
 node_modules
 package-lock.json
-a1.json
+map/a1.json
+stream/a.txt

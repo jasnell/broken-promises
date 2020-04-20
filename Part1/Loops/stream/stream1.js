@@ -1,5 +1,5 @@
-const { writeFile } = require('fs').promises;
-const data = require('./a.json')
+const { createReadStream, createWriteStream } = require('fs')
+const { pipeline, Transform } = require('stream')
 const http = require('http')
 
 const { monitorEventLoopDelay } = require('perf_hooks')
@@ -7,7 +7,6 @@ const h = monitorEventLoopDelay()
 h.enable()
 
 const start = process.hrtime.bigint()
-
 let done = false
 let counter = 0
 
@@ -17,24 +16,31 @@ function a() {
 }
 setImmediate(a)
 
-async function write(data) {
-  await writeFile('a1.json', JSON.stringify(data))
-  done = true
-}
 
-Promise.all(data.items.map((i) => {
-  return new Promise((resolve, rej) => {
-    http.get('http://localhost:8000', { headers: { num: i } }, (res) => {
+class MyTransform extends Transform {
+  _transform(chunk, encoding, callback) {
+    const i = chunk[0];
+    http.get('http://localhost:8000', {
+        headers: { num: i }
+      }, (res) => {
       let data = ''
       res.setEncoding('utf8')
       res.on('data', (chunk) => data += chunk)
       res.on('close', () => {
-        resolve(data)
+        callback(null, data)
       })
-      res.on('error', rej)
-    })
-  })
-})).then(write)
+      res.on('error', callback)
+    });
+  }
+}
+
+const file = createReadStream('a.bin', { highWaterMark: 1})
+const out = createWriteStream('a.txt')
+
+pipeline(file, new MyTransform(), out, (err) => {
+  if (err) throw err
+  done = true
+});
 
 process.on('exit', () => {
   console.log(

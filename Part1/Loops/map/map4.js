@@ -45,5 +45,7 @@ process.on('exit', () => {
     h.min,
     h.max,
     h.mean,
+    h.percentile(50),
+    h.percentile(99),
     counter)
 })
