@@ -2,25 +2,6 @@ const { createReadStream, createWriteStream } = require('fs')
 const { pipeline, Transform } = require('stream')
 const http = require('http')
 
-const { monitorEventLoopDelay } = require('perf_hooks')
-const h = monitorEventLoopDelay()
-h.enable()
-
-const start = process.hrtime.bigint()
-let done = false
-let counter = 0
-let maxHeapUsed = 0;
-let maxHeapTotal = 0;
-
-function a() {
-  const mu = process.memoryUsage()
-  maxHeapUsed = Math.max(maxHeapUsed, mu.heapUsed)
-  maxHeapTotal = Math.max(maxHeapTotal, mu.heapTotal)
-  counter++
-  if (!done) setImmediate(a)
-}
-setImmediate(a)
-
 function processItem(i) {
   return new Promise((resolve, rej) => {
     http.get('http://localhost:8000', {
@@ -51,18 +32,4 @@ const out = createWriteStream('a.txt')
 
 pipeline(file, new MyTransform(), out, (err) => {
   if (err) throw err
-  done = true
 });
-
-process.on('exit', () => {
-  console.log(
-    process.hrtime.bigint() - start,
-    h.min,
-    h.max,
-    h.mean,
-    h.percentile(50),
-    h.percentile(99),
-    maxHeapUsed,
-    maxHeapTotal,
-    counter)
-})
