@@ -2,11 +2,15 @@ const { createReadStream, createWriteStream } = require('fs')
 const { pipeline, Transform } = require('stream')
 const http = require('http')
 
+let agent;
+if (process.argv[3] === 'agent')
+  agent = new http.Agent({ keepAlive: true, maxSockets: 10 })
+
 class MyTransform extends Transform {
   _transform(chunk, encoding, callback) {
     const i = chunk[0];
     http.get('http://localhost:8000', {
-        headers: { num: i }
+        headers: { num: i }, agent
       }, (res) => {
       let data = ''
       res.setEncoding('utf8')

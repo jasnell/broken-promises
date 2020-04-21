@@ -138,8 +138,9 @@ new Promise(async (resolve, reject) => {
 
 process.on('unhandledRejection', () => {})
 
-fs.open('file_that_does_not_exist', 'r+', async (err, fd) => {
+fs.open('somefile', 'r+', async (err, fd) => {
   if (err) throw err
+  functionThatDoesNotExist()
   close(fd, () => {})
 })
 
@@ -342,9 +343,7 @@ console.log('A');
 const EventEmitter = require('events');
 const { promisify } = require('util');
 
-// Coming soon to a Node.js release... captureRejections
-// makes EventEmitter expect and understand async
-// functions.
+// captureRejections makes EventEmitter expect and understand async functions.
 
 const foo = new EventEmitter({ captureRejections: true });
 const sleep = promisify(setTimeout);
